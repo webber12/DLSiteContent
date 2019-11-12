@@ -15,7 +15,8 @@ class DLSiteContent extends SiteContent
         return $query->where('published', '0');
     }
 
-    public function scopeDepth($query, $parents = '', $depth = 1, $showParent = false) {
+    public function scopeDepth($query, $parents = '', $depth = 1, $showParent = false)
+    {
         $parents = explode(',', $parents);
         if (count($parents) > 0) {
             $ids = static::getIDs($parents, $depth);

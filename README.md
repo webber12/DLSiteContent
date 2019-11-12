@@ -26,6 +26,13 @@ foreach ($result as $item) {
 }
 $out .= '<hr>';
 
+$out .= '<h1>Сортировка по ТВ с приведением типа (пока так, нужен префикс ну и что-то еще..)</h1>';
+$result = DLSiteContent::withTVs(['price'])->published()->where('parent', 0)->orderByRaw("CAST(evo_tv_price.value AS DECIMAL(10,2)) ASC")->orderBy('pagetitle', 'desc')->get();
+foreach ($result as $item) {
+    $out .= $item->pagetitle . '<br>';
+}
+$out .= '<hr>';
+
 return $out;
 
 ```

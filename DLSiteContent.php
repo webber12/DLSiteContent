@@ -34,13 +34,12 @@ class DLSiteContent extends SiteContent
     {
         $result = array_merge($result, $parents);
         if ($depth <= 1) return $result;
-        while ((--$depth) > 0) {
-            $ids = static::whereIn('parent', $parents)->where('isfolder', '=', '1')->get()->pluck('id')->toArray();
-            if (!empty($ids)) {
-                $result = static::getIDs($ids, $depth, $result);
-            } else {
-                return $result;
-            }
+        $ids = static::whereIn('parent', $parents)->where('isfolder', '=', '1')->get()->pluck('id')->toArray();
+        if (!empty($ids)) {
+            $depth--;
+            $result = static::getIDs($ids, $depth, $result);
+        } else {
+            return $result;
         }
         return $result;
     }

@@ -12,19 +12,22 @@ foreach ($result as $item) {
 }
 $out .= '<hr><hr>';
 
-$out .= '<h1>Вместе с родителями (showParent=1)</h1>';
+$out .= '<h1>Вместе с родителям &parents=0&depth=3&showParent=1 (начиная с корня сайта)</h1>';
 $result = DLSiteContent::depth(0, 3, 1)->published()->orderBy('menuindex', 'asc')->get();
 foreach ($result as $item) {
     $out .= $item->pagetitle . '<br>';
+    //$out .= print_r($item->myprop, true);
 }
 $out .= '<hr><hr>';
 
-$out .= '<h1>Сортировка по TV</h1>';
-$result = DLSiteContent::withTVs(['titl', 'keyw'])->where('parent', 0)->published()->orderBy('tv_titl.value', 'desc')->limit(3)->get();
+$out .= '<h1>Только конечные ресурсы (для родителей с id 2, 4 - &parents=2,4&depth=3)</h1>';
+$result = DLSiteContent::depth('2,4', 3)->published()->orderBy('menuindex', 'asc')->get();
 foreach ($result as $item) {
     $out .= $item->pagetitle . '<br>';
+    //$out .= print_r($item->myprop, true);
 }
 $out .= '<hr>';
+
 return $out;
 
 ```

@@ -44,4 +44,19 @@ class DLSiteContent extends SiteContent
         }
         return $result;
     }
+
+    public function scopeWithTVs($query, $tvList = '')
+    {
+        if (!empty($tvList)) {
+            $tvList = array_unique($tvList);
+            $tvs = SiteTmplvar::whereIn('name', $tvList)->get()->pluck('id', 'name')->toArray();
+            foreach ($tvs as $tvname => $tvid) {
+                $query = $query->leftJoin('site_tmplvar_contentvalues as tv_' . $tvname, function ($join) use ($tvid, $tvname) {
+                    $join->on('site_content.id', '=', 'tv_' . $tvname . '.contentid')->where('tv_' . $tvname . '.tmplvarid', '=', $tvid);
+                });
+            }
+            $query->groupBy('site_content.id');
+        }
+        return $query;
+    }
 }

@@ -18,5 +18,13 @@ foreach ($result as $item) {
     $out .= $item->pagetitle . '<br>';
 }
 $out .= '<hr><hr>';
-return $out
+
+$out .= '<h1>Сортировка по TV</h1>';
+$result = DLSiteContent::withTVs(['titl', 'keyw'])->where('parent', 0)->published()->orderBy('tv_titl.value', 'desc')->limit(3)->get();
+foreach ($result as $item) {
+    $out .= $item->pagetitle . '<br>';
+}
+$out .= '<hr>';
+return $out;
+
 ```

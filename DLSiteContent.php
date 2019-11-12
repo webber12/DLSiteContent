@@ -45,7 +45,7 @@ class DLSiteContent extends SiteContent
         return $result;
     }
 
-    public function scopeWithTVs($query, $tvList = '')
+    public function scopeWithTVs($query, $tvList = array())
     {
         if (!empty($tvList)) {
             $tvList = array_unique($tvList);

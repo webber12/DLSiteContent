@@ -20,7 +20,7 @@ foreach ($result as $item) {
 $out .= '<hr>';
 
 $out .= '<h1>Сортировка и фильтр по ТВ</h1>';
-$result = DLSiteContent::withTVs(['price', 'title'])->published()->where('parent', 0)->where('tv_price.value', '>', '150')->orderBy('tv_price.value', 'desc')->orderBy('pagetitle', 'asc')->get();
+$result = DLSiteContent::withTVs(['price', 'titl'])->published()->where('parent', 0)->where('tv_price.value', '>', '150')->orderBy('tv_price.value', 'desc')->orderBy('pagetitle', 'asc')->get();
 foreach ($result as $item) {
     $out .= $item->pagetitle . '<br>';
 }

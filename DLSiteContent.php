@@ -58,4 +58,78 @@ class DLSiteContent extends SiteContent
         }
         return $query;
     }
+
+    public function scopeTvFilter($query, $filters = '', $outerSep = ';', $innerSep = ':')
+    {
+        //todo tvd
+        $prefix = EvolutionCMS()->getDatabase()->getConfig('prefix');
+        $filters = explode($outerSep, trim($filters));
+        foreach ($filters as $filter) {
+            if (empty($filter)) break;
+            $parts = explode($innerSep, $filter, 5);
+            $type = $parts[0];
+            $tvname = $parts[1];
+            $op = $parts[2];
+            $value = !empty($parts[3]) ? $parts[3] : '';
+            $cast = !empty($parts[4]) ? $parts[4] : '';
+            switch(true) {
+                case ($op == 'in'):
+                    $query = $query->whereIn('tv_' . $tvname . '.value', explode(',', $value));
+                    break;
+                case ($op == 'not_in'):
+                    $query = $query->whereNotIn('tv_' . $tvname . '.value', explode(',', $value));
+                    break;
+                case ($op == 'like'):
+                    $query = $query->where('tv_' . $tvname . '.value', $op, '%' . $value . '%');
+                    break;
+                case ($op == 'like-r'):
+                    $query = $query->where('tv_' . $tvname . '.value', $op, $value . '%');
+                    break;
+                case ($op == 'like-l'):
+                    $query = $query->where('tv_' . $tvname . '.value', $op, '%' . $value);
+                    break;
+                case ($op == 'isnull'):
+                case ($op == 'null'):
+                    $query = $query->whereNull('tv_' . $tvname . '.value');
+                    break;
+                case ($op == 'isnotnull'):
+                case ($op == '!null'):
+                    $query = $query->whereNotNull('tv_' . $tvname . '.value');
+                    break;
+                case ($cast == 'UNSIGNED'):
+                case ($cast == 'SIGNED'):
+                case (strpos($cast, 'DECIMAL') !== false):
+                    $query = $query->whereRaw("CAST(" . $prefix . 'tv_' . $tvname . ".value AS " . $cast . " ) " . $op . " " . $value);
+                    break;
+                default:
+                    $query = $query->where('tv_' . $tvname . '.value', $op, $value);
+                    break;
+            }
+        }
+        return $query;
+    }
+
+    public function scopeTvOrderBy($query, $orderBy = '')
+    {
+        $prefix = EvolutionCMS()->getDatabase()->getConfig('prefix');
+        $orderBy = explode(',', trim($orderBy));
+        foreach ($orderBy as $parts) {
+            if (empty(trim($parts))) return;
+            $part = explode(' ', trim($parts), 3);
+            $tvname = $part[0];
+            $sortDir = !empty($part[1]) ? $part[1] : 'desc';
+            $cast = !empty($part[2]) ? $part[2] : '';
+            switch (true) {
+                case ($cast == 'UNSIGNED'):
+                case ($cast == 'SIGNED'):
+                case (strpos($cast, 'DECIMAL') !== false):
+                    $query = $query->orderByRaw("CAST(" . $prefix . 'tv_' . $tvname . ".value AS " . $cast . ") " . $sortDir);
+                    break;
+                default:
+                    $query = $query->orderBy('tv_' . $tvname . ".value", $sortDir);
+                    break;
+            }
+        }
+        return $query;
+    }
 }

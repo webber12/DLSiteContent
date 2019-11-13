@@ -29,9 +29,19 @@ foreach ($result as $item) {
 $out .= '<hr>';
 
 
+/** можно но сложно, лучше использовать следующий метод
 $prefix = $modx->getDatabase()->getConfig('prefix');
 $out .= '<h1>Сортировка и фильтрация по ТВ с приведением типа (пока так, нужен $modx, префикс ну и что-то еще..)</h1>';
 $result = DLSiteContent::withTVs(['price'])->published()->where('parent', 0)->whereRaw("CAST(" . $prefix . "tv_price.value AS DECIMAL(10,2)) > 150")->orderByRaw("CAST(" . $prefix . "tv_price.value AS DECIMAL(10,2)) ASC")->orderBy('pagetitle', 'desc')->get();
+foreach ($result as $item) {
+    $out .= $item->pagetitle . '<br>';
+}
+$out .= '<hr>';
+**/
+
+
+$out .= '<h1>Сортировка и фильтрация по ТВ с приведением типа (и без него)</h1>';
+$result = DLSiteContent::withTVs(['price', 'brand'])->published()->where('parent', 0)->tvFilter("tv:price:>:150:UNSIGNED;tv:price:<:600:UNSIGNED;tv:brand:in:а,б,в;tv:brand:!null;")->tvOrderBy("price asc UNSIGNED, brand asc")->orderBy('pagetitle', 'asc')->get();
 foreach ($result as $item) {
     $out .= $item->pagetitle . '<br>';
 }

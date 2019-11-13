@@ -47,14 +47,14 @@ class DLSiteContent extends SiteContent
         return $result;
     }
 
-    public function scopeWithTVs($query, $tvList = array())
+    public function scopeWithTVs($query, $tvList = array(), $sep = ':')
     {
         if (!empty($tvList)) {
             $query->select('site_content.*');
             $tvList = array_unique($tvList);
             $tvListWithDefaults = [];
             foreach ($tvList as $v) {
-                $tmp = explode(':', $v, 2);
+                $tmp = explode($sep, $v, 2);
                 $tvListWithDefaults[$tmp[0]] = !empty($tmp[1]) ? trim($tmp[1]) : '';
             }
             $tvs = SiteTmplvar::whereIn('name', array_keys($tvListWithDefaults))->get()->pluck('id', 'name')->toArray();
@@ -132,24 +132,38 @@ class DLSiteContent extends SiteContent
         return $query;
     }
 
-    public function scopeTvOrderBy($query, $orderBy = '')
+    public function scopeTvOrderBy($query, $orderBy = '', $sep = ':')
     {
         $prefix = EvolutionCMS()->getDatabase()->getConfig('prefix');
         $orderBy = explode(',', trim($orderBy));
         foreach ($orderBy as $parts) {
             if (empty(trim($parts))) return;
-            $part = explode(' ', trim($parts), 3);
+            $part = array_map('trim', explode(' ', trim($parts), 3));
             $tvname = $part[0];
             $sortDir = !empty($part[1]) ? $part[1] : 'desc';
             $cast = !empty($part[2]) ? $part[2] : '';
+            $withDefaults = false;
+            echo $tvname;
+            if (strpos($tvname, $sep) !== false) {
+                list($tvname, $withDefaults) = explode($sep, $tvname, 2);
+                $withDefaults = !empty($withDefaults) && $withDefaults == 'd';
+            }
+            $field = 'tv_' . $tvname . ".value";
+            if ($withDefaults === true) {
+                $field = DB::Raw("IFNULL(`" . $prefix . "tv_" . $tvname . "`.`value`, `" . $prefix . "tvd_" . $tvname . "`.`default_text`)");
+            }
             switch (true) {
                 case ($cast == 'UNSIGNED'):
                 case ($cast == 'SIGNED'):
                 case (strpos($cast, 'DECIMAL') !== false):
-                    $query = $query->orderByRaw("CAST(" . $prefix . 'tv_' . $tvname . ".value AS " . $cast . ") " . $sortDir);
+                    if ($withDefaults === false) {
+                        $query = $query->orderByRaw("CAST(" . $prefix . 'tv_' . $tvname . ".value AS " . $cast . ") " . $sortDir);
+                    } else {
+                        $query = $query->orderByRaw("CAST(IFNULL(`" . $prefix . "tv_" . $tvname . "`.`value`, `" . $prefix . "tvd_" . $tvname . "`.`default_text`) AS " . $cast . ") " . $sortDir);
+                    }
                     break;
                 default:
-                    $query = $query->orderBy('tv_' . $tvname . ".value", $sortDir);
+                    $query = $query->orderBy($field, $sortDir);
                     break;
             }
         }

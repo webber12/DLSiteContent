@@ -48,8 +48,8 @@ foreach ($result as $item) {
 $out .= '<hr>';
 
 
-$out .= '<h1>Фильтрация по ТВ с приведением типа (и без него) с учетом значений по-умолчанию</h1>';
-$result = DLSiteContent::withTVs(['price:d', 'brand'])->published()->where('parent', 0)->tvFilter("tvd:price:>:150:UNSIGNED;tv:brand:in:а,б,в")->get();
+$out .= '<h1>Фильтрация и сортировка по ТВ с приведением типа (и без него) с учетом значений по-умолчанию</h1>';
+$result = DLSiteContent::withTVs(['price:d', 'brand'])->published()->where('parent', 0)->tvFilter("tvd:price:>:150:UNSIGNED;tv:brand:in:а,б,в")->tvOrderBy("price:d asc UNSIGNED, brand asc")->orderBy('pagetitle', 'asc')->get();
 foreach ($result as $item) {
     $out .= $item->id . ' - ' . $item->pagetitle . '<br>';
 }

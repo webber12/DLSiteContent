@@ -143,7 +143,6 @@ class DLSiteContent extends SiteContent
             $sortDir = !empty($part[1]) ? $part[1] : 'desc';
             $cast = !empty($part[2]) ? $part[2] : '';
             $withDefaults = false;
-            echo $tvname;
             if (strpos($tvname, $sep) !== false) {
                 list($tvname, $withDefaults) = explode($sep, $tvname, 2);
                 $withDefaults = !empty($withDefaults) && $withDefaults == 'd';

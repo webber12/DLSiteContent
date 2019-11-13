@@ -136,19 +136,18 @@ class DLSiteContent extends SiteContent
 
     public static function tvList($docs, $tvList = '')
     {
+        $docsTV = array();
         if (empty($docs)) {
             return array();
         } else if (empty($tvList)) {
             return array();
         } else {
-            $docsTV = array();
             $ids = $docs->pluck('id')->toArray();
             $tvList = array_map('trim', explode(',', $tvList));
             $tvs = SiteTmplvar::whereIn('name', $tvList)->get();
             $tvNames = $tvs->pluck('default_text', 'name')->toArray();
             $tvIds = $tvs->pluck('name', 'id')->toArray();
             $tvValues = SiteTmplvarContentvalue::whereIn('contentid', $ids)->whereIn('tmplvarid', array_keys($tvIds))->get()->toArray();
-            $docsTV = array();
             foreach ($tvValues as $tv) {
                 if (empty($tv['value']) && !empty($tvNames[$tvIds [$tv['tmplvarid']] ] )) {
                     $tv['value'] = $tvNames[ $tvIds[ $tv['tmplvarid'] ] ];
@@ -175,4 +174,5 @@ class DLSiteContent extends SiteContent
         }
         return $docsTV;
     }
+
 }

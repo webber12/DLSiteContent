@@ -134,7 +134,7 @@ class DLSiteContent extends SiteContent
         return $query;
     }
 
-    public static function tvList($docs, $tvList = '')
+    public static function tvList($docs, $tvList = array())
     {
         $docsTV = array();
         if (empty($docs)) {
@@ -143,7 +143,6 @@ class DLSiteContent extends SiteContent
             return array();
         } else {
             $ids = $docs->pluck('id')->toArray();
-            $tvList = array_map('trim', explode(',', $tvList));
             $tvs = SiteTmplvar::whereIn('name', $tvList)->get();
             $tvNames = $tvs->pluck('default_text', 'name')->toArray();
             $tvIds = $tvs->pluck('name', 'id')->toArray();

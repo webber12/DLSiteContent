@@ -50,7 +50,7 @@ $out .= '<hr>';
 
 $out .= '<h1>Работаем с tvList</h1>';
 $result = DLSiteContent::where('parent', 0)->published()->get();
-$tvs = DLSiteContent::tvList($result, 'price,brand');
+$tvs = DLSiteContent::tvList($result, ['price', 'brand']);
 foreach ($result as $item) {
     $out .= $item->id . ' - ' . $item->pagetitle . '<br>';
     if (!empty($tvs[$item->id])) {

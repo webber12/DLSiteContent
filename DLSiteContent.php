@@ -133,4 +133,46 @@ class DLSiteContent extends SiteContent
         }
         return $query;
     }
+
+    public static function tvList($docs, $tvList = '')
+    {
+        if (empty($docs)) {
+            return array();
+        } else if (empty($tvList)) {
+            return array();
+        } else {
+            $docsTV = array();
+            $ids = $docs->pluck('id')->toArray();
+            $tvList = array_map('trim', explode(',', $tvList));
+            $tvs = SiteTmplvar::whereIn('name', $tvList)->get();
+            $tvNames = $tvs->pluck('default_text', 'name')->toArray();
+            $tvIds = $tvs->pluck('name', 'id')->toArray();
+            $tvValues = SiteTmplvarContentvalue::whereIn('contentid', $ids)->whereIn('tmplvarid', array_keys($tvIds))->get()->toArray();
+            $docsTV = array();
+            foreach ($tvValues as $tv) {
+                if (empty($tv['value']) && !empty($tvNames[$tvIds [$tv['tmplvarid']] ] )) {
+                    $tv['value'] = $tvNames[ $tvIds[ $tv['tmplvarid'] ] ];
+                }
+                unset($tv['id']);
+                $docsTV[ $tv['contentid'] ][ $tv['tmplvarid'] ] = $tv;
+            }
+            foreach ($ids as $docid) {
+                foreach ($tvIds as $tvid => $tvname) {
+                    if (empty($docsTV[$docid][$tvid])) {
+                        $docsTV[$docid][$tvid] = array('tmplvarid' => $tvid, 'contentid' => $docid, 'value' => $tvNames[$tvIds [$tvid] ]);
+                    }
+                }
+            }
+        }
+        if (!empty($docsTV)) {
+            $tmp = array();
+            foreach ($docsTV as $docid => $tvs) {
+                foreach ($tvs as $tvid => $tv) {
+                    $tmp[$docid][ $tvIds[$tvid] ] = $tv['value'];
+                }
+            }
+            $docsTV = $tmp;
+        }
+        return $docsTV;
+    }
 }

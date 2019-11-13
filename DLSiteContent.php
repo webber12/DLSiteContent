@@ -47,6 +47,7 @@ class DLSiteContent extends SiteContent
     public function scopeWithTVs($query, $tvList = array())
     {
         if (!empty($tvList)) {
+            $query->select('site_content.*');
             $tvList = array_unique($tvList);
             $tvs = SiteTmplvar::whereIn('name', $tvList)->get()->pluck('id', 'name')->toArray();
             foreach ($tvs as $tvname => $tvid) {

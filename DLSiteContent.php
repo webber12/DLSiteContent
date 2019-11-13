@@ -76,7 +76,6 @@ class DLSiteContent extends SiteContent
 
     public function scopeTvFilter($query, $filters = '', $outerSep = ';', $innerSep = ':')
     {
-        //todo tvd
         $prefix = EvolutionCMS()->getDatabase()->getConfig('prefix');
         $filters = explode($outerSep, trim($filters));
         foreach ($filters as $filter) {
@@ -156,7 +155,7 @@ class DLSiteContent extends SiteContent
                 case ($cast == 'SIGNED'):
                 case (strpos($cast, 'DECIMAL') !== false):
                     if ($withDefaults === false) {
-                        $query = $query->orderByRaw("CAST(" . $prefix . 'tv_' . $tvname . ".value AS " . $cast . ") " . $sortDir);
+                        $query = $query->orderByRaw("CAST(`" . $prefix . 'tv_' . $tvname . "`.`value` AS " . $cast . ") " . $sortDir);
                     } else {
                         $query = $query->orderByRaw("CAST(IFNULL(`" . $prefix . "tv_" . $tvname . "`.`value`, `" . $prefix . "tvd_" . $tvname . "`.`default_text`) AS " . $cast . ") " . $sortDir);
                     }

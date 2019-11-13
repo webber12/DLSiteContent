@@ -48,6 +48,14 @@ foreach ($result as $item) {
 $out .= '<hr>';
 
 
+$out .= '<h1>Фильтрация по ТВ с приведением типа (и без него) с учетом значений по-умолчанию</h1>';
+$result = DLSiteContent::withTVs(['price:d', 'brand'])->published()->where('parent', 0)->tvFilter("tvd:price:>:150:UNSIGNED;tv:brand:in:а,б,в")->get();
+foreach ($result as $item) {
+    $out .= $item->id . ' - ' . $item->pagetitle . '<br>';
+}
+$out .= '<hr>';
+
+
 $out .= '<h1>Работаем с tvList</h1>';
 $result = DLSiteContent::where('parent', 0)->published()->get();
 $tvs = DLSiteContent::tvList($result, ['price', 'brand']);

@@ -70,17 +70,17 @@ foreach ($result as $item) {
 }
 
 
-$out .= '<h1>Работаем с tvList (TV передаются внутри коллекции)</h1>';
+$out .= '<h1>Работаем с tvList внутри массива (рекомендуемый метод)</h1>';
 $result = DLSiteContent::where('parent', 0)->published()->get();
 $result = DLSiteContent::tvList($result, 'price,brand');
 foreach ($result as $item) {
-    $out .= $item->id . ' - ' . $item->pagetitle . '<br>';
-    if (!empty($item->tvs[$item->id])) {
-        foreach ($item->tvs[$item->id] as $name => $value) {
+    $out .= $item['id'] . ' - ' . $item['pagetitle'] . '<br>';
+    if (!empty($item['tvs'])) {
+        foreach ($item['tvs'] as $name => $value) {
             $out .= $name . ': ' . $value . '<br>';
         }
-    }
-    $out .= '<hr>';
+}
+$out .= '<hr>';
 }
 
 return $out;

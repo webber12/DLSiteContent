@@ -209,15 +209,22 @@ class DLSiteContent extends SiteContent
         return $docsTV;
     }
     
-    //return collection with tvs
+    //return docs array with tvs
     public static function tvList($docs, $tvList = '')
     {
-        $docsTV = static::getTvList($docs, $tvList);
-        $docs = $docs->map(function ($value, $key) use ($docsTV) {
-            $value['tvs'] = $docsTV;
-            return $value;
-        });
-        return $docs;
+        if (empty($docs)) {
+            return array();
+        } else {
+            $docsTV = static::getTvList($docs, $tvList);
+            $docs = $docs->toArray();
+            $tmp = $docs;
+            foreach ($docs as $key => $doc) {
+                $tmp[$key]['tvs'] = !empty($docsTV[$doc['id']]) ? $docsTV[$doc['id']] : array();
+            }
+            $docs = $tmp;
+            unset($tmp);
+            return $docs;
+        }
     }
 
 }

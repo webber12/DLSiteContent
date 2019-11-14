@@ -168,7 +168,8 @@ class DLSiteContent extends SiteContent
         return $query;
     }
 
-    public static function tvList($docs, $tvList = array())
+    //return tvs array [$docid => tvs array()]
+    public static function getTvList($docs, $tvList = array())
     {
         $docsTV = array();
         if (empty($docs)) {
@@ -206,6 +207,17 @@ class DLSiteContent extends SiteContent
             $docsTV = $tmp;
         }
         return $docsTV;
+    }
+    
+    //return collection with tvs
+    public static function tvList($docs, $tvList = '')
+    {
+        $docsTV = static::getTvList($docs, $tvList);
+        $docs = $docs->map(function ($value, $key) use ($docsTV) {
+            $value['tvs'] = $docsTV;
+            return $value;
+        });
+        return $docs;
     }
 
 }

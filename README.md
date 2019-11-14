@@ -56,13 +56,27 @@ foreach ($result as $item) {
 $out .= '<hr>';
 
 
-$out .= '<h1>Работаем с tvList</h1>';
+$out .= '<h1>Работаем с getTvList (TV передаются в отдельном массиве)</h1>';
 $result = DLSiteContent::where('parent', 0)->published()->get();
-$tvs = DLSiteContent::tvList($result, ['price', 'brand']);
+$tvs = DLSiteContent::getTvList($result, ['price', 'brand']);
 foreach ($result as $item) {
     $out .= $item->id . ' - ' . $item->pagetitle . '<br>';
     if (!empty($tvs[$item->id])) {
         foreach ($tvs[$item->id] as $name => $value) {
+            $out .= $name . ': ' . $value . '<br>';
+        }
+    }
+    $out .= '<hr>';
+}
+
+
+$out .= '<h1>Работаем с tvList (TV передаются внутри коллекции)</h1>';
+$result = DLSiteContent::where('parent', 0)->published()->get();
+$result = DLSiteContent::tvList($result, 'price,brand');
+foreach ($result as $item) {
+    $out .= $item->id . ' - ' . $item->pagetitle . '<br>';
+    if (!empty($item->tvs[$item->id])) {
+        foreach ($item->tvs[$item->id] as $name => $value) {
             $out .= $name . ': ' . $value . '<br>';
         }
     }

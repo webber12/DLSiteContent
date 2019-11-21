@@ -72,7 +72,7 @@ foreach ($result as $item) {
 
 $out .= '<h1>Работаем с tvList внутри массива (рекомендуемый метод)</h1>';
 $result = DLSiteContent::where('parent', 0)->published()->get();
-$result = DLSiteContent::tvList($result, 'price,brand');
+$result = DLSiteContent::tvList($result, ['price', 'brand']);
 foreach ($result as $item) {
     $out .= $item['id'] . ' - ' . $item['pagetitle'] . '<br>';
     if (!empty($item['tvs'])) {
@@ -82,6 +82,9 @@ foreach ($result as $item) {
 }
 $out .= '<hr>';
 }
+
+$out .= '<h1>tagsData (контроллер site_content_tags) с сортировкой pub_date/createdon</h1>';
+$result = DLSiteContent::where('parent', 1)->published()->tagsData('17:5,7,8')->orderByDate()->get();
 
 return $out;
 

@@ -210,7 +210,7 @@ class DLSiteContent extends SiteContent
     }
     
     //return docs array with tvs
-    public static function tvList($docs, $tvList = '')
+    public static function tvList($docs, $tvList = array())
     {
         if (empty($docs)) {
             return array();
@@ -225,6 +225,25 @@ class DLSiteContent extends SiteContent
             unset($tmp);
             return $docs;
         }
+    }
+
+    public function scopeOrderByDate($query, $sortDir = 'desc')
+    {
+        return $query->orderByRaw('IF(pub_date!=0,pub_date,createdon) ' . $sortDir);
+    }
+
+    public function scopeTagsData($query, $tagsData, $sep = ':', $tagSeparator = ',')
+    {
+        $tmp = explode($sep, $tagsData, 2);
+        if (is_numeric($tmp[0])) {
+            $tv_id = $tmp[0];
+            $tags = explode($tagSeparator, $tmp[1]);
+            $query->select('site_content.*');
+            $query->whereIn('tags.name', $tags)->where('site_content_tags.tv_id', $tv_id);
+            $query->rightJoin('site_content_tags', 'site_content_tags.doc_id', '=', 'site_content.id');
+            $query->rightJoin('tags', 'tags.id', '=', 'site_content_tags.tag_id');
+        }
+        return $query;
     }
 
 }

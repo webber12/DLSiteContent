@@ -18,6 +18,11 @@ class DLSiteContent extends SiteContent
         return $query->where('published', '0');
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('published', '1')->where('deleted', '0');
+    }
+
     public function scopeDepth($query, $parents = '', $depth = 1, $showParent = false)
     {
         $parents = explode(',', $parents);

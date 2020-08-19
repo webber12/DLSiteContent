@@ -67,6 +67,8 @@ class DLSiteContent extends SiteContent
                 $query = $query->leftJoin('site_tmplvar_contentvalues as tv_' . $tvname, function ($join) use ($tvid, $tvname) {
                     $join->on('site_content.id', '=', 'tv_' . $tvname . '.contentid')->where('tv_' . $tvname . '.tmplvarid', '=', $tvid);
                 });
+                $query = $query->addSelect('tv_' . $tvname . '.value as '.$tvname);
+                $query = $query->groupBy('tv_' . $tvname . '.value');
                 if (!empty($tvListWithDefaults[$tvname]) && $tvListWithDefaults[$tvname] == 'd') {
                     $query = $query->leftJoin('site_tmplvars as tvd_' . $tvname, function ($join) use ($tvid, $tvname) {
                         $join->where('tvd_' . $tvname . '.id', '=', $tvid);
